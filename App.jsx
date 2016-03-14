@@ -5,9 +5,14 @@ App = React.createClass({
  
   // Loads items from the Tasks collection and puts them on this.data.tasks
   getMeteorData() {
+
+     let query = {};
+      
     return {
-      tasks: Tasks.find({}, {sort: {createdAt: -1}}).fetch()
-    }
+      tasks: Tasks.find(query, {sort: {createdAt: -1}}).fetch(),
+      incompleteCount: Tasks.find({checked: {$ne: true}}).count(),
+      currentUser: Meteor.user()
+    };
   },
  
   renderTasks() {
@@ -25,7 +30,9 @@ App = React.createClass({
  
     Tasks.insert({
       text: text,
-      createdAt: new Date() // current time
+      createdAt: new Date(),            // current time
+      owner: Meteor.userId(),           // _id of logged in user
+      username: Meteor.user().username  // username of logged in user
     });
  
     // Clear form
@@ -38,13 +45,17 @@ App = React.createClass({
       <div className="container">
         <header>
           <h1>Todo List</h1>
+        
+            <AccountsUIWrapper />
  
-          <form className="new-task" onSubmit={this.handleSubmit} >
-            <input
-              type="text"
-              ref="textInput"
-              placeholder="Type to add new tasks" />
-          </form>
+          { this.data.currentUser ?
+            <form className="new-task" onSubmit={this.handleSubmit} >
+              <input
+                type="text"
+                ref="textInput"
+                placeholder="Type to add new tasks" />
+            </form> : ''
+          }
         </header>
  
         <ul>
