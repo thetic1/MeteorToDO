@@ -48,11 +48,12 @@ if (Meteor.isClient) {
     "click .toggle-checked": function () {
       // Set the checked property to the opposite of its current value
       Meteor.call("setChecked", this._id, ! this.checked);
-      });
     },
+                       
     "click .delete": function () {
       Meteor.call("deleteTask", this._id);
     },
+      
     "click .toggle-private": function () {
       Meteor.call("setPrivate", this._id, ! this.private);
     }
@@ -61,6 +62,7 @@ if (Meteor.isClient) {
   Accounts.ui.config({
     passwordSignupFields: "USERNAME_ONLY"
   });
+}
 
 Meteor.methods({
   addTask: function (text) {
@@ -77,20 +79,13 @@ Meteor.methods({
     });
   },
   deleteTask: function (taskId) {
-    var task = Tasks.findOne(taskId);
-    if (task.private && task.owner !== Meteor.userId()) {
-      // If the task is private, make sure only the owner can delete it
-      throw new Meteor.Error("not-authorized");
-    }
- 
+      Tasks.remove(taskId);
   },
+
   setChecked: function (taskId, setChecked) {
-    var task = Tasks.findOne(taskId);
-    if (task.private && task.owner !== Meteor.userId()) {
-      // If the task is private, make sure only the owner can check it off
-      throw new Meteor.Error("not-authorized");
-    }
+    Tasks.update(taskId, { $set: { checked: setChecked} });
   },
+    
   setPrivate: function (taskId, setToPrivate) {
     var task = Tasks.findOne(taskId);
  
@@ -101,4 +96,5 @@ Meteor.methods({
  
     Tasks.update(taskId, { $set: { private: setToPrivate } });
     
-}
+  }
+});
