@@ -1,6 +1,8 @@
 # DGM3780 Meteor #
 
 # Build instructions #
+clone repo
+run meteor
 
 # What you learned #
 Meteor uses mongo collections. It also has a great built in way to manage users and user sessions. Which would actually be pretty handy on my project.
